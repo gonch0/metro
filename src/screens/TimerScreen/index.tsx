@@ -1,23 +1,26 @@
 import React, {
     useEffect,
+    useRef,
     useState,
 } from 'react';
 import {
     View,
     Text,
-    ScrollView,
     StyleSheet,
+    SafeAreaView,
+    FlatList,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
+import { getClosestTimeIndex } from '../../common/functions/getClosestTimeIndex';
 import { getDistance } from '../../common/functions/getDistance';
 
 import { requestLocationPermission } from '../../common/functions/requestLocationPermission';
 import { STATION1 } from '../../constants/coords';
 
 export const TimerScreen = () => {
-    const [currentTime, setCurrentTime] = useState('');
     const [location, setLocation] = useState(false);
     const [distance, setDistance] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(null);
 
     const getLocation = () => {
         const result = requestLocationPermission();
@@ -49,20 +52,56 @@ export const TimerScreen = () => {
                 );
             }
         });
-        console.log(location);
+    };
+
+    const scroll = () => {
+        const closest = getClosestTimeIndex(STATION1.departuresDefault);
+        setCurrentIndex(closest);
+        scrollToIndex(closest);
     };
 
     useEffect(() => {
-        const hours = new Date().getHours();
-        const minutes = new Date().getMinutes();
-
-        setCurrentTime(`${hours}:${minutes}`);
         getLocation();
+
+        setTimeout(() => {
+            scroll();
+        }, 3000);
+
+        let minTimer = setInterval(() => {
+            getLocation();
+            scroll();
+        }, 60000);
+
+        return () => {
+            clearInterval(minTimer);
+        };
     }, []);
 
+    const Item = ({
+        title,
+        index,
+    }) => (
+        <View style={styles.item}>
+            <Text
+                style={[
+                    styles.title,
+                    index === currentIndex && styles.bold,
+                ]}
+            >{title}</Text>
+        </View>
+    );
+
+    const ref = useRef();
+
+    const scrollToIndex = index => {
+        ref?.current?.scrollToIndex({
+            animated: true,
+            index: index,
+        });
+    };
+
     return (
-        <View>
-            <Text>Time: {currentTime}</Text>
+        <SafeAreaView style={styles.scrollStyle}>
             <Text>
                 Latitude: {location
                 ? location.coords.latitude
@@ -79,26 +118,39 @@ export const TimerScreen = () => {
                 : null} km
             </Text>
 
-            <ScrollView
-                style={styles.scrollStyle}
-            >
-                {STATION1.departuresDefault.map((item) => (
-                    <Text
-                        style={{
-                            fontWeight: 'bold',
-                            fontSize: 24,
-                        }}
-                    >{item}</Text>
-                ))}
-            </ScrollView>
-        </View>
+            <FlatList
+                data={STATION1.departuresDefault}
+                renderItem={({
+                    item,
+                    index,
+                }) => <Item
+                    title={item}
+                    index={index}
+                />}
+                keyExtractor={(index) => String(index)}
+                ref={ref}
+                onScrollToIndexFailed={() => {}}
+            />
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     scrollStyle: {
-        display: 'flex',
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        flex: 1,
+        marginTop: 0,
+    },
+    item: {
+        backgroundColor: '#f9c2ff',
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 16,
+    },
+    title: {
+        fontSize: 24,
+        textAlign: 'center',
+    },
+    bold: {
+        fontWeight: 'bold',
     },
 });

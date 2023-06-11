@@ -1,8 +1,4 @@
 export const getDistance = (lat1, lon1, lat2, lon2) => {
-
-    console.log({lat1});
-    console.log({lat2});
-
     const radlat1 = Math.PI * lat1 / 180;
     const radlat2 = Math.PI * lat2 / 180;
     const theta = lon1 - lon2;
