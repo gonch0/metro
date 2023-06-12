@@ -8,97 +8,51 @@ import {
     Text,
     StyleSheet,
     SafeAreaView,
-    FlatList,
+    ScrollView,
 } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
-import { getClosestTimeIndex } from '../../common/functions/getClosestTimeIndex';
-import { getDistance } from '../../common/functions/getDistance';
 
-import { requestLocationPermission } from '../../common/functions/requestLocationPermission';
-import { STATION1 } from '../../constants/coords';
+import { getClosestTimeIndex } from '../../common/functions/getClosestTimeIndex';
+import { getLocation } from '../../common/functions/getLocation';
+import { STATIONS } from '../../constants/coords';
 
 export const TimerScreen = () => {
     const [location, setLocation] = useState(false);
     const [distance, setDistance] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(null);
+    const [yCoords, setYCoords] = useState([]);
 
-    const getLocation = () => {
-        const result = requestLocationPermission();
+    const ref = useRef();
 
-        result.then(res => {
-            if (res) {
-                Geolocation.getCurrentPosition(
-                    position => {
-                        setLocation(position);
-
-                        const dist = getDistance(
-                            position.coords.latitude,
-                            position.coords.longitude,
-                            STATION1.coords.latitude,
-                            STATION1.coords.longitude,
-                        );
-
-                        setDistance(dist);
-                    },
-                    error => {
-                        console.log(error.code, error.message);
-                        setLocation(false);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 15000,
-                        maximumAge: 10000,
-                    },
-                );
-            }
+    const scrollToIndex = (index) => {
+        ref?.current?.scrollTo({
+            x: 0,
+            y: yCoords[index - 1],
+            animated: true,
         });
     };
 
     const scroll = () => {
-        const closest = getClosestTimeIndex(STATION1.departuresDefault);
+        const closest = getClosestTimeIndex(STATIONS.station1.departuresDefault);
         setCurrentIndex(closest);
         scrollToIndex(closest);
     };
 
     useEffect(() => {
-        getLocation();
+        getLocation(setLocation, setDistance);
 
         setTimeout(() => {
             scroll();
-        }, 3000);
+        }, 500);
 
         let minTimer = setInterval(() => {
-            getLocation();
+            getLocation(setLocation, setDistance);
             scroll();
-        }, 60000);
+        }, 5000);
 
         return () => {
             clearInterval(minTimer);
         };
     }, []);
-
-    const Item = ({
-        title,
-        index,
-    }) => (
-        <View style={styles.item}>
-            <Text
-                style={[
-                    styles.title,
-                    index === currentIndex && styles.bold,
-                ]}
-            >{title}</Text>
-        </View>
-    );
-
-    const ref = useRef();
-
-    const scrollToIndex = index => {
-        ref?.current?.scrollToIndex({
-            animated: true,
-            index: index,
-        });
-    };
 
     return (
         <SafeAreaView style={styles.scrollStyle}>
@@ -118,19 +72,31 @@ export const TimerScreen = () => {
                 : null} km
             </Text>
 
-            <FlatList
-                data={STATION1.departuresDefault}
-                renderItem={({
-                    item,
-                    index,
-                }) => <Item
-                    title={item}
-                    index={index}
-                />}
-                keyExtractor={(index) => String(index)}
+            <ScrollView
+                style={styles.scrollStyle}
                 ref={ref}
-                onScrollToIndexFailed={() => {}}
-            />
+            >
+                {STATIONS.station1.departuresDefault.map((item, index) => (
+                    <View
+                        key={item}
+                        style={styles.item}
+                        onLayout={(event) => {
+                            const layout = event.nativeEvent.layout;
+                            yCoords[index] = layout.y;
+                            setYCoords(yCoords);
+                        }}
+                    >
+                        <Text
+                            style={[
+                                styles.title,
+                                index === currentIndex && styles.bold,
+                            ]}
+                        >
+                            {item}
+                        </Text>
+                    </View>
+                ))}
+            </ScrollView>
         </SafeAreaView>
     );
 };
