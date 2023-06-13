@@ -10,14 +10,15 @@ import {
     SafeAreaView,
     ScrollView,
 } from 'react-native';
+import { getClosestStation } from '../../common/functions/getClosestStation';
 
 import { getClosestTimeIndex } from '../../common/functions/getClosestTimeIndex';
 import { getLocation } from '../../common/functions/getLocation';
 import { STATIONS } from '../../constants/coords';
 
 export const TimerScreen = () => {
-    const [location, setLocation] = useState(false);
-    const [distance, setDistance] = useState(false);
+    const [location, setLocation] = useState('');
+    const [distance, setDistance] = useState('');
     const [currentIndex, setCurrentIndex] = useState(null);
     const [yCoords, setYCoords] = useState([]);
 
@@ -38,7 +39,8 @@ export const TimerScreen = () => {
     };
 
     useEffect(() => {
-        getLocation(setLocation, setDistance);
+        // getLocation(setLocation, setDistance);
+        getClosestStation(setLocation, setDistance);
 
         setTimeout(() => {
             scroll();
@@ -46,6 +48,7 @@ export const TimerScreen = () => {
 
         let minTimer = setInterval(() => {
             getLocation(setLocation, setDistance);
+            getClosestStation(setLocation, setDistance);
             scroll();
         }, 5000);
 
@@ -57,14 +60,7 @@ export const TimerScreen = () => {
     return (
         <SafeAreaView style={styles.scrollStyle}>
             <Text>
-                Latitude: {location
-                ? location.coords.latitude
-                : null}
-            </Text>
-            <Text>
-                Longitude: {location
-                ? location.coords.longitude
-                : null}
+                Closest: {location}
             </Text>
             <Text>
                 Distance to ST1: {distance

@@ -1,5 +1,6 @@
 export const STATIONS = {
     station1: {
+        name: 'Проспект Космонавтов',
         coords: {
             latitude: 56.900348,
             longitude: 60.613789,
@@ -175,42 +176,57 @@ export const STATIONS = {
         ],
     },
     station2: {
+        name: 'Уралмаш',
         coords: {
             latitude: 56.887009,
             longitude: 60.612866,
         },
     },
     station3: {
+        name: 'Машиностроителей',
         coords: {
             latitude: 56.876010,
             longitude: 60.612147,
         },
     },
     station4: {
+        name: 'Уральская',
         coords: {
             latitude: 56.857739,
             longitude: 60.600073,
         },
     },
     station5: {
+        name: 'Динамо',
         coords: {
             latitude: 56.847803,
             longitude: 60.599326,
         },
     },
     station6: {
+        name: 'Площадь 1905 года',
         coords: {
             latitude: 56.835975,
             longitude: 60.598742,
         },
     },
+
     station7: {
+        name: 'Геологическая',
+        coords: {
+            latitude: 56.826450,
+            longitude: 60.603044,
+        },
+    },
+    station8: {
+        name: 'Чкаловская',
         coords: {
             latitude: 56.808266,
             longitude: 60.609595,
         },
     },
-    station8: {
+    station9: {
+        name: 'Ботаническая',
         coords: {
             latitude: 56.797351,
             longitude: 60.629553,

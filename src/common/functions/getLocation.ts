@@ -10,8 +10,6 @@ export const getLocation = (setLocation, setDistance) => {
         if (res) {
             Geolocation.getCurrentPosition(
                 position => {
-                    setLocation(position);
-
                     const dist = getDistance(
                         position.coords.latitude,
                         position.coords.longitude,
@@ -23,12 +21,13 @@ export const getLocation = (setLocation, setDistance) => {
                 },
                 error => {
                     console.log(error.code, error.message);
-                    setLocation(false);
+                    setLocation(null);
                 },
                 {
                     enableHighAccuracy: true,
                     timeout: 15000,
                     maximumAge: 10000,
+                    forceLocationManager: true,
                 },
             );
         }
