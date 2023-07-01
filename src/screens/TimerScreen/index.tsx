@@ -1,56 +1,58 @@
 import React, {
     useEffect,
-    useRef,
     useState,
 } from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
     SafeAreaView,
-    ScrollView,
+    StyleSheet,
+    Text,
 } from 'react-native';
 import { getClosestStation } from '../../common/functions/getClosestStation';
+import { getIsDayOff } from '../../common/functions/isDayOff';
+import { parseScheduleString } from '../../common/functions/parseScheduleString';
+import { Scroll } from '../../components/Scroll';
+import { STATIONS } from '../../constants';
 
-import { getClosestTimeIndex } from '../../common/functions/getClosestTimeIndex';
-import { getLocation } from '../../common/functions/getLocation';
-import { STATIONS } from '../../constants/coords';
+let location = null;
 
 export const TimerScreen = () => {
-    const [location, setLocation] = useState('');
-    const [distance, setDistance] = useState('');
-    const [currentIndex, setCurrentIndex] = useState(null);
-    const [yCoords, setYCoords] = useState([]);
-
-    const ref = useRef();
-
-    const scrollToIndex = (index) => {
-        ref?.current?.scrollTo({
-            x: 0,
-            y: yCoords[index - 1],
-            animated: true,
-        });
-    };
-
-    const scroll = () => {
-        const closest = getClosestTimeIndex(STATIONS.station1.departuresDefault);
-        setCurrentIndex(closest);
-        scrollToIndex(closest);
-    };
+    const [isDayOff, setIsDayOff] = useState(false);
+    const [timesSouth, setTimesSouth] = useState([]);
+    const [timesNorth, setTimesNorth] = useState([]);
 
     useEffect(() => {
-        // getLocation(setLocation, setDistance);
-        getClosestStation(setLocation, setDistance);
+        let minTimer;
 
-        setTimeout(() => {
-            scroll();
-        }, 500);
+        getClosestStation()
+            .then((loc) => {
+                location = loc;
 
-        let minTimer = setInterval(() => {
-            getLocation(setLocation, setDistance);
-            getClosestStation(setLocation, setDistance);
-            scroll();
-        }, 5000);
+                getIsDayOff()
+                    .then((isOff) => {
+                        setIsDayOff(!!isOff);
+
+                        minTimer = setInterval(() => {
+                            getClosestStation().then((newLoc) => {
+                                location = newLoc;
+                            });
+                        }, 4000);
+
+                        const southArr = parseScheduleString(STATIONS[location].departures.south?.[isDayOff
+                            ? 'dayOff'
+                            : 'workday'] || '');
+
+                        const northArr = parseScheduleString(STATIONS[location].departures.north?.[isDayOff
+                            ? 'dayOff'
+                            : 'workday'] || '');
+
+                        setTimesSouth(southArr);
+                        setTimesNorth(northArr);
+                    })
+                    .catch((error) => {
+                        console.log('getIsDayOff ERR');
+                        console.log(error);
+                    });
+            });
 
         return () => {
             clearInterval(minTimer);
@@ -60,39 +62,25 @@ export const TimerScreen = () => {
     return (
         <SafeAreaView style={styles.scrollStyle}>
             <Text>
-                Closest: {location}
-            </Text>
-            <Text>
-                Distance to ST1: {distance
-                ? distance
-                : null} km
+                isDayOff: {String(isDayOff)}
             </Text>
 
-            <ScrollView
-                style={styles.scrollStyle}
-                ref={ref}
-            >
-                {STATIONS.station1.departuresDefault.map((item, index) => (
-                    <View
-                        key={item}
-                        style={styles.item}
-                        onLayout={(event) => {
-                            const layout = event.nativeEvent.layout;
-                            yCoords[index] = layout.y;
-                            setYCoords(yCoords);
-                        }}
-                    >
-                        <Text
-                            style={[
-                                styles.title,
-                                index === currentIndex && styles.bold,
-                            ]}
-                        >
-                            {item}
-                        </Text>
-                    </View>
-                ))}
-            </ScrollView>
+            {location && (
+                <Text>
+                    Closest: {STATIONS[location].name}
+                </Text>
+            )}
+
+            <Text style={styles.bg}>
+                south
+            </Text>
+            {timesSouth.length > 0 && <Scroll times={timesSouth} />}
+
+            <Text style={styles.bg}>
+                north
+            </Text>
+
+            {timesNorth.length > 0 && <Scroll times={timesNorth} />}
         </SafeAreaView>
     );
 };
@@ -102,17 +90,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 0,
     },
-    item: {
-        backgroundColor: '#f9c2ff',
-        padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 16,
-    },
-    title: {
-        fontSize: 24,
-        textAlign: 'center',
-    },
-    bold: {
-        fontWeight: 'bold',
+    bg: {
+        backgroundColor: '#FFA500',
     },
 });
