@@ -11,5 +11,5 @@ export const getClosestTimeIndex = (intervals: Array<string>) => {
         }
     }
 
-    return null;
+    return 0;
 };

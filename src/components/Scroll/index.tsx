@@ -1,6 +1,5 @@
 import React, {
     useEffect,
-    useLayoutEffect,
     useRef,
     useState,
 } from 'react';
@@ -23,14 +22,15 @@ export const Scroll = ({ times }) => {
     const scrollToIndex = (index) => {
         ref?.current?.scrollTo({
             x: 0,
-            y: yCoords[index],
+            y: index > 3
+                ? yCoords[index - 3]
+                : yCoords[index],
             animated: true,
         });
     };
 
     const scroll = () => {
         const closest = getClosestTimeIndex(times);
-
         setCurrentIndex(closest);
         scrollToIndex(closest);
     };

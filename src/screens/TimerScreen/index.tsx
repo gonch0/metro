@@ -7,6 +7,7 @@ import {
     StyleSheet,
     Text,
 } from 'react-native';
+
 import { getClosestStation } from '../../common/functions/getClosestStation';
 import { getIsDayOff } from '../../common/functions/isDayOff';
 import { parseScheduleString } from '../../common/functions/parseScheduleString';
@@ -35,7 +36,7 @@ export const TimerScreen = () => {
                             getClosestStation().then((newLoc) => {
                                 location = newLoc;
                             });
-                        }, 4000);
+                        }, 60000);
 
                         const southArr = parseScheduleString(STATIONS[location].departures.south?.[isDayOff
                             ? 'dayOff'
@@ -67,20 +68,26 @@ export const TimerScreen = () => {
 
             {location && (
                 <Text>
-                    Closest: {STATIONS[location].name}
+                    Ближайшая станция: {STATIONS[location].name}
                 </Text>
             )}
 
-            <Text style={styles.bg}>
-                south
-            </Text>
-            {timesSouth.length > 0 && <Scroll times={timesSouth} />}
+            {timesSouth.length > 0 && (
+                <>
+                    <Text style={styles.bg}>В сторону "Ботаническая"</Text>
+                    <Scroll times={timesSouth} />
+                </>
+            )}
 
-            <Text style={styles.bg}>
-                north
-            </Text>
+            {timesNorth.length > 0 && (
+                <>
+                    <Text style={styles.bg}>
+                        В сторону "Проспект космонавтов"
+                    </Text>
+                    <Scroll times={timesNorth} />
+                </>
+            )}
 
-            {timesNorth.length > 0 && <Scroll times={timesNorth} />}
         </SafeAreaView>
     );
 };
