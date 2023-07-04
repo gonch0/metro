@@ -16,12 +16,12 @@ import { Header } from '../../components/Header';
 import { Scroll } from '../../components/Scroll';
 import { STATIONS } from '../../constants';
 
-let location = null;
-
 export const TimerScreen = () => {
     const {
         isDayOff,
         setIsDayOff,
+        location,
+        setLocation,
     } = useAppContext();
 
     const [times, setTimes] = useState({
@@ -36,12 +36,14 @@ export const TimerScreen = () => {
             getClosestStation(),
             getIsDayOff(),
         ]).then((res) => {
-            location = res[0];
+            const newLocation = res[0]
+            setLocation(newLocation);
+
             setIsDayOff(!!res[1]);
 
             minTimer = setInterval(() => {
                 getClosestStation().then((loc) => {
-                    location = loc;
+                    setLocation(loc)
                 });
             }, 60000);
 
@@ -50,8 +52,8 @@ export const TimerScreen = () => {
                 : 'workday';
 
             setTimes({
-                north: parseScheduleString(STATIONS[location].departures.north?.[dayOffKey] || ''),
-                south: parseScheduleString(STATIONS[location].departures.south?.[dayOffKey] || ''),
+                north: parseScheduleString(STATIONS[newLocation].departures.north?.[dayOffKey] || ''),
+                south: parseScheduleString(STATIONS[newLocation].departures.south?.[dayOffKey] || ''),
             });
         });
 
@@ -76,7 +78,7 @@ export const TimerScreen = () => {
 
     return (
         <SafeAreaView style={styles.scrollStyle}>
-            <Header location={location} />
+            <Header />
 
             {times.south.length > 0 && (
                 <>

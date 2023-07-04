@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     StyleSheet,
     Text,
@@ -10,10 +10,11 @@ import { useAppContext } from '../../../App';
 
 import { STATIONS } from '../../constants';
 
-export const Header = ({ location }) => {
+export const Header = () => {
     const {
         isDayOff,
         setIsDayOff,
+        location,
     } = useAppContext();
 
     return (
