@@ -7,84 +7,88 @@ import {
     StyleSheet,
     Text,
 } from 'react-native';
+import { useAppContext } from '../../../App';
 
 import { getClosestStation } from '../../common/functions/getClosestStation';
 import { getIsDayOff } from '../../common/functions/isDayOff';
 import { parseScheduleString } from '../../common/functions/parseScheduleString';
+import { Header } from '../../components/Header';
 import { Scroll } from '../../components/Scroll';
 import { STATIONS } from '../../constants';
 
 let location = null;
 
 export const TimerScreen = () => {
-    const [isDayOff, setIsDayOff] = useState(false);
-    const [timesSouth, setTimesSouth] = useState([]);
-    const [timesNorth, setTimesNorth] = useState([]);
+    const {
+        isDayOff,
+        setIsDayOff,
+    } = useAppContext();
+
+    const [times, setTimes] = useState({
+        north: [],
+        south: [],
+    });
 
     useEffect(() => {
         let minTimer;
 
-        getClosestStation()
-            .then((loc) => {
-                location = loc;
+        Promise.all([
+            getClosestStation(),
+            getIsDayOff(),
+        ]).then((res) => {
+            location = res[0];
+            setIsDayOff(!!res[1]);
 
-                getIsDayOff()
-                    .then((isOff) => {
-                        setIsDayOff(!!isOff);
+            minTimer = setInterval(() => {
+                getClosestStation().then((loc) => {
+                    location = loc;
+                });
+            }, 60000);
 
-                        minTimer = setInterval(() => {
-                            getClosestStation().then((newLoc) => {
-                                location = newLoc;
-                            });
-                        }, 60000);
+            const dayOffKey = isDayOff
+                ? 'dayOff'
+                : 'workday';
 
-                        const southArr = parseScheduleString(STATIONS[location].departures.south?.[isDayOff
-                            ? 'dayOff'
-                            : 'workday'] || '');
-
-                        const northArr = parseScheduleString(STATIONS[location].departures.north?.[isDayOff
-                            ? 'dayOff'
-                            : 'workday'] || '');
-
-                        setTimesSouth(southArr);
-                        setTimesNorth(northArr);
-                    })
-                    .catch((error) => {
-                        console.log('getIsDayOff ERR');
-                        console.log(error);
-                    });
+            setTimes({
+                north: parseScheduleString(STATIONS[location].departures.north?.[dayOffKey] || ''),
+                south: parseScheduleString(STATIONS[location].departures.south?.[dayOffKey] || ''),
             });
+        });
 
         return () => {
             clearInterval(minTimer);
         };
     }, []);
 
+    useEffect(() => {
+        if (location) {
+            const dayOffKey = isDayOff
+                ? 'dayOff'
+                : 'workday';
+
+            setTimes({
+                north: parseScheduleString(STATIONS[location].departures.north?.[dayOffKey] || ''),
+                south: parseScheduleString(STATIONS[location].departures.south?.[dayOffKey] || ''),
+            });
+        }
+
+    }, [isDayOff]);
+
     return (
         <SafeAreaView style={styles.scrollStyle}>
-            <Text>
-                isDayOff: {String(isDayOff)}
-            </Text>
+            <Header location={location} />
 
-            {location && (
-                <Text>
-                    Ближайшая станция: {STATIONS[location].name}
-                </Text>
-            )}
-
-            {timesSouth.length > 0 && (
+            {times.south.length > 0 && (
                 <>
-                    <Text style={styles.bg}>В сторону "Ботаническая"</Text>
-                    <Scroll times={timesSouth} />
+                    <Text style={styles.direction}>В сторону "Ботаническая"</Text>
+                    <Scroll times={times.south} />
                 </>
             )}
 
-            {timesNorth.length > 0 && (
+            {times.north.length > 0 && (
                 <>
-                    <Text style={styles.bg}>
-                        В сторону "Проспект космонавтов"
-                    </Text>
-                    <Scroll times={timesNorth} />
+                    <Text style={styles.direction}>В сторону "Проспект Космонавтов"</Text>
+                    <Scroll times={times.north} />
                 </>
             )}
 
@@ -97,7 +101,10 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 0,
     },
-    bg: {
-        backgroundColor: '#FFA500',
+    direction: {
+        backgroundColor: 'orange',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        fontWeight: '500',
     },
 });
