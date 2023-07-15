@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     StyleSheet,
     Text,
@@ -15,6 +15,7 @@ export const Header = () => {
         isDayOff,
         setIsDayOff,
         location,
+        setLocation,
     } = useAppContext();
 
     return (
@@ -35,7 +36,10 @@ export const Header = () => {
                         {STATIONS[location].name}
                     </Text>
 
-                    <Button title='Сменить станцию' />
+                    <Button
+                        title='Сменить станцию'
+                        onPress={() => setLocation('station6')}
+                    />
                 </View>
             )}
         </View>

@@ -36,14 +36,14 @@ export const TimerScreen = () => {
             getClosestStation(),
             getIsDayOff(),
         ]).then((res) => {
-            const newLocation = res[0]
+            const newLocation = res[0];
             setLocation(newLocation);
 
             setIsDayOff(!!res[1]);
 
             minTimer = setInterval(() => {
                 getClosestStation().then((loc) => {
-                    setLocation(loc)
+                    setLocation(loc);
                 });
             }, 60000);
 
@@ -63,18 +63,22 @@ export const TimerScreen = () => {
     }, []);
 
     useEffect(() => {
-        if (location) {
-            const dayOffKey = isDayOff
-                ? 'dayOff'
-                : 'workday';
+            if (location) {
+                const dayOffKey = isDayOff
+                    ? 'dayOff'
+                    : 'workday';
 
-            setTimes({
-                north: parseScheduleString(STATIONS[location].departures.north?.[dayOffKey] || ''),
-                south: parseScheduleString(STATIONS[location].departures.south?.[dayOffKey] || ''),
-            });
-        }
-
-    }, [isDayOff]);
+                setTimes({
+                    north: parseScheduleString(STATIONS[location].departures.north?.[dayOffKey] || ''),
+                    south: parseScheduleString(STATIONS[location].departures.south?.[dayOffKey] || ''),
+                });
+            }
+        },
+        [
+            isDayOff,
+            location,
+        ],
+    );
 
     return (
         <SafeAreaView style={styles.scrollStyle}>

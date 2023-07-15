@@ -12,19 +12,19 @@ import {
 
 import { getClosestTimeIndex } from '../../common/functions/getClosestTimeIndex';
 
-const yCoords = [];
+let yCoords = [];
 
 export const Scroll = ({ times }) => {
     const [currentIndex, setCurrentIndex] = useState(null);
+    const [isLayoutFinished, setIsLayoutFinished] = useState(false);
 
-    const ref = useRef();
+    const ref = useRef(null);
 
     const scrollToIndex = (index) => {
+
         ref?.current?.scrollTo({
             x: 0,
-            y: index > 3
-                ? yCoords[index - 3]
-                : yCoords[index],
+            y: yCoords[index - 1],
             animated: true,
         });
     };
@@ -35,21 +35,17 @@ export const Scroll = ({ times }) => {
         scrollToIndex(closest);
     };
 
-    useEffect(() => {
-        let timer;
+    useEffect(
+        () => {
+            if (isLayoutFinished) {
+                scroll();
+                setIsLayoutFinished(false);
+                yCoords = [];
+            }
+        },
+        [isLayoutFinished],
+    );
 
-        setTimeout(() => {
-            scroll();
-        }, 1000);
-
-        timer = setInterval(() => {
-            scroll();
-        }, 5000);
-
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
 
     return (
         <ScrollView
@@ -63,6 +59,10 @@ export const Scroll = ({ times }) => {
                     onLayout={(event) => {
                         const layout = event.nativeEvent.layout;
                         yCoords[index] = layout.y;
+
+                        if (index === times.length - 1) {
+                            setIsLayoutFinished(true);
+                        }
                     }}
                 >
                     <Text
