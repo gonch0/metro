@@ -9,7 +9,8 @@ export const getClosestStation = () => {
     return getPermission
         .then((res) => {
             return new Promise((resolve) => {
-                let currentStation = '';
+                // Станция по умолчанию
+                let currentStation = 'station1';
 
                 if (res) {
                     Geolocation.getCurrentPosition(

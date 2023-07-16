@@ -6,8 +6,8 @@ import {
     Button,
     Switch,
 } from 'react-native';
-import { useAppContext } from '../../../App';
 
+import { useAppContext } from '../../../App';
 import { STATIONS } from '../../constants';
 
 export const Header = () => {
@@ -20,28 +20,35 @@ export const Header = () => {
 
     return (
         <View style={styles.headerStyle}>
+            {location && (
+                <View style={styles.row}>
+                    <View>
+                        <Text>
+                            {`Ближайшая станция:`}
+                        </Text>
+                        <Text style={styles.bold}>
+                            {STATIONS[location].name}
+                        </Text>
+                    </View>
+                    <Button
+                        title='Поменять'
+                        onPress={() => setLocation('station6')}
+                    />
+                </View>
+            )}
+
             <View style={styles.row}>
-                <Text>
-                    Сегодня выходной
+                <Text style={!isDayOff && styles.bold}>
+                    Рабочий день
                 </Text>
                 <Switch
                     onValueChange={setIsDayOff}
                     value={isDayOff}
                 />
+                <Text style={isDayOff && styles.bold}>
+                    Выходной день
+                </Text>
             </View>
-
-            {location && (
-                <View style={styles.row}>
-                    <Text>
-                        {STATIONS[location].name}
-                    </Text>
-
-                    <Button
-                        title='Сменить станцию'
-                        onPress={() => setLocation('station6')}
-                    />
-                </View>
-            )}
         </View>
     );
 };
@@ -56,5 +63,8 @@ const styles = StyleSheet.create({
     headerStyle: {
         marginVertical: 8,
         marginHorizontal: 16,
+    },
+    bold: {
+        fontWeight: 'bold',
     },
 });

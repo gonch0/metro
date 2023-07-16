@@ -3,13 +3,21 @@ export const getClosestTimeIndex = (intervals: Array<string>) => {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    // TODO 15:58 dayOff
-
     for (let index = 0; index < intervals.length; index++) {
         const [hour, minute] = intervals[index].split(':').map(Number);
 
-        if (currentHour === hour && minute >= currentMinute) {
-            return index;
+        if (currentHour === hour) {
+            if (minute >= currentMinute) {
+                return index;
+            }
+
+            const [nextHour] = intervals[index + 1].split(':');
+
+            if (Number(nextHour) === currentHour + 1) {
+                return intervals[index + 1]
+                    ? index + 1
+                    : 0;
+            }
         }
     }
 
