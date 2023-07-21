@@ -11,7 +11,7 @@ export const getClosestTimeIndex = (intervals: Array<string>) => {
                 return index;
             }
 
-            const [nextHour] = intervals[index + 1].split(':');
+            const [nextHour] = intervals[index + 1]?.split(':') || [];
 
             if (Number(nextHour) === currentHour + 1) {
                 return intervals[index + 1]

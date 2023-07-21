@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import { useAppContext } from '../../../App';
+import { navigate } from '../../common/functions/navigation';
 import { STATIONS } from '../../constants';
 
 export const Header = () => {
@@ -32,7 +33,9 @@ export const Header = () => {
                     </View>
                     <Button
                         title='Поменять'
-                        onPress={() => setLocation('station6')}
+                        onPress={() => {
+                            navigate('StationsScreen');
+                        }}
                     />
                 </View>
             )}

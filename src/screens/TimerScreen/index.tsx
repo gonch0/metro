@@ -7,8 +7,8 @@ import {
     StyleSheet,
     Text,
 } from 'react-native';
-import { useAppContext } from '../../../App';
 
+import { useAppContext } from '../../../App';
 import { getClosestStation } from '../../common/functions/getClosestStation';
 import { getIsDayOff } from '../../common/functions/isDayOff';
 import { parseScheduleString } from '../../common/functions/parseScheduleString';
