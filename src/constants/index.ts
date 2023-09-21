@@ -148,14 +148,5 @@ export const STATIONS = {
     },
 };
 
-export const STATIONS_NAMES = [
-    'Проспект Космонавтов',
-    'Уралмаш',
-    'Машиностроителей',
-    'Уральская',
-    'Динамо',
-    'Площадь 1905 года',
-    'Геологическая',
-    'Чкаловская',
-    'Ботаническая',
-];
+export const IS_DAY_OFF_URL = 'https://isdayoff.ru/today?tz=Asia/Yekaterinburg';
+export const IS_DAY_OFF_TIMEOUT = 10000;

@@ -1,16 +1,14 @@
+import {
+    IS_DAY_OFF_TIMEOUT,
+    IS_DAY_OFF_URL,
+} from '../../constants';
 import { fetchWithTimeout } from './fetchWithTimeout';
 
-export const getIsDayOff = () => {
-    const URL = 'https://isdayoff.ru/today?tz=Asia/Yekaterinburg';
-
-    return fetchWithTimeout(URL, 5000)
-        .then((res) => res.json())
-        .then((response) => {
-            return response;
-        })
-        .catch(() => {
-            alert('error while isDayOff');
-            const today = new Date().getDay();
-            return today === 6 || today === 0;
-        });
-};
+export const getIsDayOff = () => fetchWithTimeout(IS_DAY_OFF_URL, IS_DAY_OFF_TIMEOUT)
+    .then((res) => res.json())
+    .then((response) => response)
+    .catch(() => {
+        alert('error while getIsDayOff');
+        const today = new Date().getDay();
+        return today === 6 || today === 0;
+    });

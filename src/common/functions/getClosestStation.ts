@@ -8,6 +8,7 @@ export const getClosestStation = () => {
 
     return getPermission
         .then((res) => {
+
             return new Promise((resolve) => {
                 // Станция по умолчанию
                 let currentStation = 'station1';

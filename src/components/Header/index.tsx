@@ -16,24 +16,32 @@ export const Header = () => {
         isDayOff,
         setIsDayOff,
         location,
-        setLocation,
     } = useAppContext();
 
     return (
         <View style={styles.headerStyle}>
             {location && (
-                <View style={styles.row}>
+                <View
+                    style={[
+                        styles.row,
+                        styles.mb,
+                    ]}
+                >
                     <View>
-                        <Text>
-                            {`Ближайшая станция:`}
-                        </Text>
-                        <Text style={styles.bold}>
+                        <Text style={styles.text}>Ближайшая станция:</Text>
+                        <Text
+                            style={[
+                                styles.text,
+                                styles.bold,
+                            ]}
+                        >
                             {STATIONS[location].name}
                         </Text>
                     </View>
                     <Button
                         title='Поменять'
                         onPress={() => {
+
                             navigate('StationsScreen');
                         }}
                     />
@@ -41,14 +49,27 @@ export const Header = () => {
             )}
 
             <View style={styles.row}>
-                <Text style={!isDayOff && styles.bold}>
+                <Text
+                    style={[
+                        styles.text,
+                        !isDayOff && styles.bold,
+                    ]}
+                >
                     Рабочий день
                 </Text>
+
                 <Switch
+                    trackColor={{false: 'grey'}}
                     onValueChange={setIsDayOff}
                     value={isDayOff}
                 />
-                <Text style={isDayOff && styles.bold}>
+
+                <Text
+                    style={[
+                        styles.text,
+                        isDayOff && styles.bold,
+                    ]}
+                >
                     Выходной день
                 </Text>
             </View>
@@ -63,11 +84,17 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
+    mb: {
+        marginBottom: 8,
+    },
     headerStyle: {
         marginVertical: 8,
         marginHorizontal: 16,
     },
     bold: {
         fontWeight: 'bold',
+    },
+    text: {
+        color: 'grey',
     },
 });

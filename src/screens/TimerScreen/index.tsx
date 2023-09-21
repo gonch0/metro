@@ -1,7 +1,4 @@
-import React, {
-    useEffect,
-    useState,
-} from 'react';
+import React, { useEffect } from 'react';
 import {
     SafeAreaView,
     StyleSheet,
@@ -9,8 +6,7 @@ import {
 } from 'react-native';
 
 import { useAppContext } from '../../../App';
-import { getClosestStation } from '../../common/functions/getClosestStation';
-import { getIsDayOff } from '../../common/functions/isDayOff';
+
 import { parseScheduleString } from '../../common/functions/parseScheduleString';
 import { Header } from '../../components/Header';
 import { Scroll } from '../../components/Scroll';
@@ -19,50 +15,13 @@ import { STATIONS } from '../../constants';
 export const TimerScreen = () => {
     const {
         isDayOff,
-        setIsDayOff,
         location,
-        setLocation,
+        times,
+        setTimes,
     } = useAppContext();
 
-    const [times, setTimes] = useState({
-        north: [],
-        south: [],
-    });
-
-    useEffect(() => {
-        let minTimer;
-
-        Promise.all([
-            getClosestStation(),
-            getIsDayOff(),
-        ]).then((res) => {
-            const newLocation = res[0];
-            setLocation(newLocation);
-
-            setIsDayOff(!!res[1]);
-
-            minTimer = setInterval(() => {
-                getClosestStation().then((loc) => {
-                    setLocation(loc);
-                });
-            }, 60000);
-
-            const dayOffKey = isDayOff
-                ? 'dayOff'
-                : 'workday';
-
-            setTimes({
-                north: parseScheduleString(STATIONS[newLocation].departures.north?.[dayOffKey] || ''),
-                south: parseScheduleString(STATIONS[newLocation].departures.south?.[dayOffKey] || ''),
-            });
-        });
-
-        return () => {
-            clearInterval(minTimer);
-        };
-    }, []);
-
-    useEffect(() => {
+    useEffect(
+        () => {
             if (location) {
                 const dayOffKey = isDayOff
                     ? 'dayOff'
@@ -97,7 +56,6 @@ export const TimerScreen = () => {
                     <Scroll times={times.north} />
                 </>
             )}
-
         </SafeAreaView>
     );
 };
@@ -106,6 +64,7 @@ const styles = StyleSheet.create({
     scrollStyle: {
         flex: 1,
         marginTop: 0,
+        backgroundColor: 'white',
     },
     direction: {
         backgroundColor: 'orange',

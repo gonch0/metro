@@ -14,9 +14,8 @@ export const StationsScreen = () => {
     const {
         location,
         setLocation,
+        minTimer,
     } = useAppContext();
-
-    console.log(location);
 
     return (
         <ScrollView style={styles.scrollStyle}>
@@ -26,6 +25,7 @@ export const StationsScreen = () => {
                     style={styles.item}
                     onPress={() => {
                         setLocation(key);
+                        clearInterval(minTimer);
                         navigate('TimerScreen');
                     }}
                 >
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     scrollStyle: {
         flex: 1,
         marginTop: 0,
+        paddingVertical: 20,
     },
     item: {
         backgroundColor: '#038674',
