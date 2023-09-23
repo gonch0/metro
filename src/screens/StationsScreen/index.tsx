@@ -4,7 +4,9 @@ import {
     ScrollView,
     StyleSheet,
     Text,
+    View,
 } from 'react-native';
+
 import { useAppContext } from '../../../App';
 import { navigate } from '../../common/functions/navigation';
 
@@ -19,26 +21,28 @@ export const StationsScreen = () => {
 
     return (
         <ScrollView style={styles.scrollStyle}>
-            {Object.entries(STATIONS).map(([key, station]) => (
-                <Pressable
-                    key={key}
-                    style={styles.item}
-                    onPress={() => {
-                        setLocation(key);
-                        clearInterval(minTimer);
-                        navigate('TimerScreen');
-                    }}
-                >
-                    <Text
-                        style={[
-                            styles.title,
-                            location === key && styles.bold,
-                        ]}
+            <View style={styles.wrapper}>
+                {Object.entries(STATIONS).map(([key, station]) => (
+                    <Pressable
+                        key={key}
+                        style={styles.item}
+                        onPress={() => {
+                            setLocation(key);
+                            clearInterval(minTimer);
+                            navigate('TimerScreen');
+                        }}
                     >
-                        {station.name}
-                    </Text>
-                </Pressable>
-            ))}
+                        <Text
+                            style={[
+                                styles.title,
+                                location === key && styles.bold,
+                            ]}
+                        >
+                            {station.name}
+                        </Text>
+                    </Pressable>
+                ))}
+            </View>
         </ScrollView>
     );
 };
@@ -47,7 +51,9 @@ const styles = StyleSheet.create({
     scrollStyle: {
         flex: 1,
         marginTop: 0,
-        paddingVertical: 20,
+    },
+    wrapper: {
+        paddingVertical: 32,
     },
     item: {
         backgroundColor: '#038674',

@@ -40,7 +40,7 @@ export const getClosestStation = () => {
                             resolve(currentStation);
                         },
                         (error) => {
-                            console.log(error.code, error.message);
+                            alert(error.message)
                             return null;
                         },
                         {

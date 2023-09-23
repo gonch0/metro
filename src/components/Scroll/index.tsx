@@ -21,7 +21,6 @@ export const Scroll = ({ times }) => {
     const ref = useRef(null);
 
     const scrollToIndex = (index) => {
-
         ref?.current?.scrollTo({
             x: 0,
             y: yCoords[index - 1],
@@ -45,7 +44,6 @@ export const Scroll = ({ times }) => {
         },
         [isLayoutFinished],
     );
-
 
     return (
         <ScrollView

@@ -18,6 +18,7 @@ export const TimerScreen = () => {
         location,
         times,
         setTimes,
+        appStatus,
     } = useAppContext();
 
     useEffect(
@@ -43,17 +44,17 @@ export const TimerScreen = () => {
         <SafeAreaView style={styles.scrollStyle}>
             <Header />
 
-            {times.south.length > 0 && (
-                <>
-                    <Text style={styles.direction}>В сторону "Ботаническая"</Text>
-                    <Scroll times={times.south} />
-                </>
-            )}
-
-            {times.north.length > 0 && (
+            {times.north.length > 0 && appStatus === 'active' &&  (
                 <>
                     <Text style={styles.direction}>В сторону "Проспект Космонавтов"</Text>
                     <Scroll times={times.north} />
+                </>
+            )}
+
+            {times.south.length > 0 && appStatus === 'active' && (
+                <>
+                    <Text style={styles.direction}>В сторону "Ботаническая"</Text>
+                    <Scroll times={times.south} />
                 </>
             )}
         </SafeAreaView>
@@ -67,7 +68,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     direction: {
-        backgroundColor: 'orange',
+        color: '#1b3505',
+        backgroundColor: '#FFA07A',
         paddingVertical: 8,
         paddingHorizontal: 16,
         fontWeight: '500',

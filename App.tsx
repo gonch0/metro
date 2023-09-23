@@ -3,14 +3,17 @@ import React, {
     createContext,
     useContext,
     useEffect,
+    useRef,
     useState,
 } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import {
     ActivityIndicator,
+    AppState,
     StyleSheet,
     View,
 } from 'react-native';
+
 import { getClosestStation } from './src/common/functions/getClosestStation';
 import { getIsDayOff } from './src/common/functions/isDayOff';
 import { navigationRef } from './src/common/functions/navigation';
@@ -35,41 +38,48 @@ export const App = () => {
         north: [],
         south: [],
     });
+    const appState = useRef(AppState.currentState);
+    const [appStatus, setAppStatus] = useState(appState.current);
 
     useEffect(() => {
-        Promise.all([
-            getClosestStation(),
-            getIsDayOff(),
-        ]).then((res) => {
-            const newLocation = res[0];
-            setLocation(newLocation);
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState === 'active') {
+                Promise.all([
+                    getClosestStation(),
+                    getIsDayOff(),
+                ]).then((res) => {
+                    const newLocation = res[0];
+                    setLocation(newLocation);
 
-            setIsDayOff(!!res[1]);
+                    setIsDayOff(!!res[1]);
 
-            minTimer = setInterval(() => {
-                getClosestStation().then((loc) => {
-                    setLocation(loc);
+                    minTimer = setInterval(() => {
+                        getClosestStation().then((loc) => {
+                            setLocation(loc);
+                        });
+                    }, 60000);
+
+                    const dayOffKey = isDayOff
+                        ? 'dayOff'
+                        : 'workday';
+
+                    setTimes({
+                        north: parseScheduleString(STATIONS[newLocation].departures.north?.[dayOffKey] || ''),
+                        south: parseScheduleString(STATIONS[newLocation].departures.south?.[dayOffKey] || ''),
+                    });
+
+                }).finally(() => {
+                    setIsLoading(false);
                 });
-            }, 60000);
-
-            const dayOffKey = isDayOff
-                ? 'dayOff'
-                : 'workday';
-
-            setTimes({
-                north: parseScheduleString(STATIONS[newLocation].departures.north?.[dayOffKey] || ''),
-                south: parseScheduleString(STATIONS[newLocation].departures.south?.[dayOffKey] || ''),
-            });
-
-        }).finally(() => {
-            setIsLoading(false);
+            }
+            appState.current = nextAppState;
+            setAppStatus(appState.current);
         });
 
         return () => {
-            clearInterval(minTimer);
+            subscription.remove();
         };
     }, []);
-
 
     if (isLoading) {
         return (
@@ -92,6 +102,7 @@ export const App = () => {
                 times,
                 setTimes,
                 minTimer,
+                appStatus,
             }}
         >
             <NavigationContainer ref={navigationRef}>
