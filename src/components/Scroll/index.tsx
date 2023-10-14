@@ -5,12 +5,12 @@ import React, {
 } from 'react';
 import {
     ScrollView,
-    StyleSheet,
     Text,
     View,
 } from 'react-native';
 
 import { getClosestTimeIndex } from '../../common/functions/getClosestTimeIndex';
+import { scrollStyles } from './styles';
 
 let yCoords = [];
 
@@ -47,13 +47,13 @@ export const Scroll = ({ times }) => {
 
     return (
         <ScrollView
-            style={styles.scrollStyle}
+            style={scrollStyles.scrollStyle}
             ref={ref}
         >
             {times.map((item, index) => (
                 <View
                     key={item}
-                    style={styles.item}
+                    style={scrollStyles.item}
                     onLayout={(event) => {
                         const layout = event.nativeEvent.layout;
                         yCoords[index] = layout.y;
@@ -65,8 +65,8 @@ export const Scroll = ({ times }) => {
                 >
                     <Text
                         style={[
-                            styles.title,
-                            index === currentIndex && styles.bold,
+                            scrollStyles.title,
+                            index === currentIndex && scrollStyles.bold,
                         ]}
                     >
                         {item}
@@ -76,25 +76,3 @@ export const Scroll = ({ times }) => {
         </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    scrollStyle: {
-        flex: 1,
-        marginTop: 0,
-    },
-    item: {
-        backgroundColor: '#038674',
-        padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 16,
-    },
-    title: {
-        fontSize: 24,
-        textAlign: 'center',
-        color: '#fff',
-    },
-    bold: {
-        color: '#FFA07A',
-        fontWeight: 'bold',
-    },
-});

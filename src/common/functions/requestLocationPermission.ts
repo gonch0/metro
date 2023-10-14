@@ -12,7 +12,8 @@ export const requestLocationPermission = () => {
             },
         )).then((granted) => {
         if (granted !== 'granted') {
-            alert('Ошибка при определении геолокации');
+            // alert('Ошибка при определении геолокации');
+            return false;
         }
         return true;
     })

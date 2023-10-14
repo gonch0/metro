@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import {
     SafeAreaView,
-    StyleSheet,
     Text,
 } from 'react-native';
 
@@ -11,6 +10,7 @@ import { parseScheduleString } from '../../common/functions/parseScheduleString'
 import { Header } from '../../components/Header';
 import { Scroll } from '../../components/Scroll';
 import { STATIONS } from '../../constants';
+import { timerScreenStyles } from './styles';
 
 export const TimerScreen = () => {
     const {
@@ -41,37 +41,22 @@ export const TimerScreen = () => {
     );
 
     return (
-        <SafeAreaView style={styles.scrollStyle}>
+        <SafeAreaView style={timerScreenStyles.scrollStyle}>
             <Header />
 
-            {times.north.length > 0 && appStatus === 'active' &&  (
+            {times.north.length > 0 && appStatus === 'active' && (
                 <>
-                    <Text style={styles.direction}>В сторону "Проспект Космонавтов"</Text>
+                    <Text style={timerScreenStyles.direction}>В сторону "Проспект Космонавтов"</Text>
                     <Scroll times={times.north} />
                 </>
             )}
 
             {times.south.length > 0 && appStatus === 'active' && (
                 <>
-                    <Text style={styles.direction}>В сторону "Ботаническая"</Text>
+                    <Text style={timerScreenStyles.direction}>В сторону "Ботаническая"</Text>
                     <Scroll times={times.south} />
                 </>
             )}
         </SafeAreaView>
     );
 };
-
-const styles = StyleSheet.create({
-    scrollStyle: {
-        flex: 1,
-        marginTop: 0,
-        backgroundColor: 'white',
-    },
-    direction: {
-        color: '#1b3505',
-        backgroundColor: '#FFA07A',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        fontWeight: '500',
-    },
-});

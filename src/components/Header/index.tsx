@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    StyleSheet,
     Text,
     View,
     Button,
@@ -10,6 +9,7 @@ import {
 import { useAppContext } from '../../../App';
 import { navigate } from '../../common/functions/navigation';
 import { STATIONS } from '../../constants';
+import { headerStyles } from './styles';
 
 export const Header = () => {
     const {
@@ -19,20 +19,20 @@ export const Header = () => {
     } = useAppContext();
 
     return (
-        <View style={styles.headerStyle}>
+        <View style={headerStyles.headerStyle}>
             {location && (
                 <View
                     style={[
-                        styles.row,
-                        styles.mb,
+                        headerStyles.row,
+                        headerStyles.mb,
                     ]}
                 >
                     <View>
-                        <Text style={styles.text}>Ближайшая станция:</Text>
+                        <Text style={headerStyles.text}>Ближайшая станция:</Text>
                         <Text
                             style={[
-                                styles.text,
-                                styles.bold,
+                                headerStyles.text,
+                                headerStyles.bold,
                             ]}
                         >
                             {STATIONS[location].name}
@@ -48,11 +48,11 @@ export const Header = () => {
                 </View>
             )}
 
-            <View style={styles.row}>
+            <View style={headerStyles.row}>
                 <Text
                     style={[
-                        styles.text,
-                        !isDayOff && styles.bold,
+                        headerStyles.text,
+                        !isDayOff && headerStyles.bold,
                     ]}
                 >
                     Рабочий день
@@ -66,8 +66,8 @@ export const Header = () => {
 
                 <Text
                     style={[
-                        styles.text,
-                        isDayOff && styles.bold,
+                        headerStyles.text,
+                        isDayOff && headerStyles.bold,
                     ]}
                 >
                     Выходной день
@@ -76,25 +76,3 @@ export const Header = () => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    row: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    mb: {
-        marginBottom: 8,
-    },
-    headerStyle: {
-        marginVertical: 8,
-        marginHorizontal: 16,
-    },
-    bold: {
-        fontWeight: 'bold',
-    },
-    text: {
-        color: 'grey',
-    },
-});

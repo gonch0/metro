@@ -28,8 +28,6 @@ export const useAppContext = () => useContext(AppContext);
 
 const Stack = createNativeStackNavigator();
 
-let minTimer;
-
 export const App = () => {
     const [isDayOff, setIsDayOff] = useState(false);
     const [location, setLocation] = useState(null);
@@ -53,12 +51,6 @@ export const App = () => {
 
                     setIsDayOff(!!res[1]);
 
-                    minTimer = setInterval(() => {
-                        getClosestStation().then((loc) => {
-                            setLocation(loc);
-                        });
-                    }, 60000);
-
                     const dayOffKey = isDayOff
                         ? 'dayOff'
                         : 'workday';
@@ -67,7 +59,6 @@ export const App = () => {
                         north: parseScheduleString(STATIONS[newLocation].departures.north?.[dayOffKey] || ''),
                         south: parseScheduleString(STATIONS[newLocation].departures.south?.[dayOffKey] || ''),
                     });
-
                 }).finally(() => {
                     setIsLoading(false);
                 });
@@ -101,19 +92,18 @@ export const App = () => {
                 setLocation,
                 times,
                 setTimes,
-                minTimer,
                 appStatus,
             }}
         >
             <NavigationContainer ref={navigationRef}>
                 <Stack.Navigator>
                     <Stack.Screen
-                        name={'TimerScreen'}
+                        name='TimerScreen'
                         component={TimerScreen}
                         options={{ headerShown: false }}
                     />
                     <Stack.Screen
-                        name={'StationsScreen'}
+                        name='StationsScreen'
                         component={StationsScreen}
                         options={{ headerShown: false }}
                     />
