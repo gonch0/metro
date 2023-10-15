@@ -12,7 +12,6 @@ import { AppState } from 'react-native';
 import { getClosestStation } from './src/common/functions/getClosestStation';
 import { getIsDayOff } from './src/common/functions/isDayOff';
 import { navigationRef } from './src/common/functions/navigation';
-import { parseScheduleString } from './src/common/functions/parseScheduleString';
 import { Loader } from './src/components/Loader';
 import { STATIONS } from './src/constants';
 import { StationsScreen } from './src/screens/StationsScreen';
@@ -49,8 +48,8 @@ export const App = () => {
                 : 'workday';
 
             setTimes({
-                north: parseScheduleString(STATIONS[newLocation].departures.north?.[dayOffKey] || ''),
-                south: parseScheduleString(STATIONS[newLocation].departures.south?.[dayOffKey] || ''),
+                north: STATIONS[newLocation].departures.north?.[dayOffKey] || '',
+                south: STATIONS[newLocation].departures.south?.[dayOffKey] || '',
             });
         }).finally(() => {
             setIsLoading(false);

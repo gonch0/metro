@@ -12,5 +12,6 @@ export const timerScreenStyles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 16,
         fontWeight: '500',
+        fontSize: 16,
     },
 });

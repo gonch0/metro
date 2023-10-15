@@ -6,7 +6,6 @@ import {
 
 import { useAppContext } from '../../../App';
 
-import { parseScheduleString } from '../../common/functions/parseScheduleString';
 import { Header } from '../../components/Header';
 import { Scroll } from '../../components/Scroll';
 import { STATIONS } from '../../constants';
@@ -29,8 +28,8 @@ export const TimerScreen = () => {
                     : 'workday';
 
                 setTimes({
-                    north: parseScheduleString(STATIONS[location].departures.north?.[dayOffKey] || ''),
-                    south: parseScheduleString(STATIONS[location].departures.south?.[dayOffKey] || ''),
+                    north: STATIONS[location].departures.north?.[dayOffKey] || '',
+                    south: STATIONS[location].departures.south?.[dayOffKey] || '',
                 });
             }
         },
