@@ -3,7 +3,7 @@ import {
     Text,
     View,
     Button,
-    Switch,
+    Pressable,
 } from 'react-native';
 
 import { useAppContext } from '../../../App';
@@ -23,7 +23,7 @@ export const Header = () => {
             {location && (
                 <View
                     style={[
-                        headerStyles.row,
+                        headerStyles.rowSb,
                         headerStyles.mb,
                     ]}
                 >
@@ -40,8 +40,8 @@ export const Header = () => {
                     </View>
                     <Button
                         title='Поменять'
+                        color='#038674'
                         onPress={() => {
-
                             navigate('StationsScreen');
                         }}
                     />
@@ -49,29 +49,38 @@ export const Header = () => {
             )}
 
             <View style={headerStyles.row}>
-                <Text
-                    style={[
-                        headerStyles.text,
-                        !isDayOff && headerStyles.bold,
-                    ]}
+                <Pressable
+                    style={headerStyles.tab}
+                    onPress={() => {
+                        setIsDayOff(false);
+                    }}
                 >
-                    Рабочий день
-                </Text>
-
-                <Switch
-                    trackColor={{false: 'grey'}}
-                    onValueChange={setIsDayOff}
-                    value={isDayOff}
-                />
-
-                <Text
-                    style={[
-                        headerStyles.text,
-                        isDayOff && headerStyles.bold,
-                    ]}
+                    <Text
+                        style={[
+                            headerStyles.tabText,
+                            !isDayOff && headerStyles.bold,
+                            !isDayOff && headerStyles.border,
+                        ]}
+                    >
+                        Рабочий день
+                    </Text>
+                </Pressable>
+                <Pressable
+                    style={headerStyles.tab}
+                    onPress={() => {
+                        setIsDayOff(true);
+                    }}
                 >
-                    Выходной день
-                </Text>
+                    <Text
+                        style={[
+                            headerStyles.tabText,
+                            isDayOff && headerStyles.bold,
+                            isDayOff && headerStyles.border,
+                        ]}
+                    >
+                        Выходной день
+                    </Text>
+                </Pressable>
             </View>
         </View>
     );

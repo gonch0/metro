@@ -1,7 +1,7 @@
 import { PermissionsAndroid } from 'react-native';
 
-export const requestLocationPermission = () => {
-    return Promise.resolve(
+export const requestLocationPermission = () => (
+    Promise.resolve(
         PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
             {
@@ -10,12 +10,5 @@ export const requestLocationPermission = () => {
                 buttonNegative: 'Отмена',
                 buttonPositive: 'Да',
             },
-        )).then((granted) => {
-        if (granted !== 'granted') {
-            // alert('Ошибка при определении геолокации');
-            return false;
-        }
-        return true;
-    })
-};
-
+        ),
+    ).then((granted) => granted === 'granted'));

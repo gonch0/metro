@@ -7,17 +7,13 @@ import React, {
     useState,
 } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import {
-    ActivityIndicator,
-    AppState,
-    StyleSheet,
-    View,
-} from 'react-native';
+import { AppState } from 'react-native';
 
 import { getClosestStation } from './src/common/functions/getClosestStation';
 import { getIsDayOff } from './src/common/functions/isDayOff';
 import { navigationRef } from './src/common/functions/navigation';
 import { parseScheduleString } from './src/common/functions/parseScheduleString';
+import { Loader } from './src/components/Loader';
 import { STATIONS } from './src/constants';
 import { StationsScreen } from './src/screens/StationsScreen';
 import { TimerScreen } from './src/screens/TimerScreen';
@@ -38,30 +34,35 @@ export const App = () => {
     });
     const appState = useRef(AppState.currentState);
     const [appStatus, setAppStatus] = useState(appState.current);
+    const isPermissionFetching = useRef(false);
+
+    const getTimesAndStations = () => {
+        Promise.all([
+            getClosestStation(),
+            getIsDayOff(),
+        ]).then(([newLocation, isOff]) => {
+            setLocation(newLocation);
+            setIsDayOff(isOff);
+
+            const dayOffKey = isDayOff
+                ? 'dayOff'
+                : 'workday';
+
+            setTimes({
+                north: parseScheduleString(STATIONS[newLocation].departures.north?.[dayOffKey] || ''),
+                south: parseScheduleString(STATIONS[newLocation].departures.south?.[dayOffKey] || ''),
+            });
+        }).finally(() => {
+            setIsLoading(false);
+            isPermissionFetching.current = false;
+        });
+    };
 
     useEffect(() => {
-        const subscription = AppState.addEventListener('change', nextAppState => {
-            if (nextAppState === 'active') {
-                Promise.all([
-                    getClosestStation(),
-                    getIsDayOff(),
-                ]).then((res) => {
-                    const newLocation = res[0];
-                    setLocation(newLocation);
-
-                    setIsDayOff(!!res[1]);
-
-                    const dayOffKey = isDayOff
-                        ? 'dayOff'
-                        : 'workday';
-
-                    setTimes({
-                        north: parseScheduleString(STATIONS[newLocation].departures.north?.[dayOffKey] || ''),
-                        south: parseScheduleString(STATIONS[newLocation].departures.south?.[dayOffKey] || ''),
-                    });
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+        const subscription = AppState.addEventListener('change', (nextAppState) => {
+            if (nextAppState === 'active' && !isPermissionFetching.current) {
+                isPermissionFetching.current = true;
+                getTimesAndStations();
             }
             appState.current = nextAppState;
             setAppStatus(appState.current);
@@ -74,12 +75,7 @@ export const App = () => {
 
     if (isLoading) {
         return (
-            <View style={styles.container}>
-                <ActivityIndicator
-                    size='large'
-                    color='#038674'
-                />
-            </View>
+            <Loader />
         );
     }
 
@@ -112,12 +108,3 @@ export const App = () => {
         </AppContext.Provider>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        flexDirection: 'row',
-        padding: 10,
-    },
-});
