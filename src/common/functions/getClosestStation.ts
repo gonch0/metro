@@ -34,7 +34,6 @@ export const getClosestStation = () => {
                                 currentStation = code;
                             }
                         });
-
                         resolve(currentStation);
                     },
                     (error) => {
@@ -47,8 +46,8 @@ export const getClosestStation = () => {
                         maximumAge: 10000,
                     },
                 );
+            } else {
+                resolve(currentStation);
             }
-
-            resolve(currentStation);
         })));
 };
