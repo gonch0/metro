@@ -8,6 +8,7 @@ import {
     Text,
     View,
 } from 'react-native';
+import { useAppContext } from '../../../App';
 
 import { getClosestTimeIndex } from '../../common/functions/getClosestTimeIndex';
 import { scrollStyles } from './styles';
@@ -15,15 +16,23 @@ import { scrollStyles } from './styles';
 let yCoords = [];
 
 export const Scroll = ({ times }) => {
+    const { location } = useAppContext();
     const [currentIndex, setCurrentIndex] = useState(null);
     const [isLayoutFinished, setIsLayoutFinished] = useState(false);
 
     const ref = useRef(null);
 
+    const offset = [
+        'station1',
+        'station9',
+    ].includes(location)
+        ? 2
+        : 1;
+
     const scrollToIndex = (index) => {
         ref?.current?.scrollTo({
             x: 0,
-            y: yCoords[index - 1],
+            y: yCoords[index - offset],
             animated: true,
         });
     };

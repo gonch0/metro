@@ -1,5 +1,5 @@
-export const fetchWithTimeout = (URL: string, timeout: number): Promise<Response> => {
-    return new Promise((resolve, reject) => {
+export const fetchWithTimeout = (URL: string, timeout: number): Promise<Response> => (
+    new Promise((resolve, reject) => {
         const controller = new AbortController();
         const id = setTimeout(() => {
             controller.abort();
@@ -14,5 +14,4 @@ export const fetchWithTimeout = (URL: string, timeout: number): Promise<Response
         }).finally(() => {
             clearTimeout(id);
         });
-    });
-};
+    }));
